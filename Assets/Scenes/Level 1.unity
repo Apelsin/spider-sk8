@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 309596632}
   - component: {fileID: 309596633}
   m_Layer: 9
-  m_Name: GameObject
+  m_Name: Rail Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2238,8 +2238,6 @@ GameObject:
   - component: {fileID: 1094104493}
   - component: {fileID: 1094104495}
   - component: {fileID: 1094104494}
-  - component: {fileID: 1094104496}
-  - component: {fileID: 1094104497}
   m_Layer: 9
   m_Name: Grinds
   m_TagString: Untagged
@@ -2403,46 +2401,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!19719996 &1094104496
-TilemapCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1094104492}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: 2f44f2a53b1327b41b2a7b413b288af8, type: 2}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
---- !u!61 &1094104497
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1094104492}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: 2f44f2a53b1327b41b2a7b413b288af8, type: 2}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 3.5615115, y: -1.54}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2.592676, y: 0.005}
-  m_EdgeRadius: 0.03
 --- !u!1 &1169202284
 GameObject:
   m_ObjectHideFlags: 0
@@ -2702,7 +2660,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1529506132}
   m_Layer: 0
-  m_Name: Camera Constraints
+  m_Name: Level Camera Constraints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3147,6 +3105,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1932192770}
   - component: {fileID: 1932192769}
+  - component: {fileID: 1932192771}
   m_Layer: 0
   m_Name: Level Configurator
   m_TagString: Untagged
@@ -3180,6 +3139,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1932192771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932192768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29eb662ad7f8bcc49809d963d65aa6ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _InputBehavior: {fileID: 0}
+  _ButtonNames:
+  - Cancel
+  _ButtonDownEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1932192769}
+        m_MethodName: HandleInputButtonDownEvent
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: InputEvents+ButtonEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &2073403329
 GameObject:
   m_ObjectHideFlags: 0
@@ -3351,16 +3341,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7712999590989386440, guid: cbc4085a367dcec48ad91a323d38dc60,
-        type: 3}
-      propertyPath: m_ConnectedRigidBody
-      value: 
-      objectReference: {fileID: 1405679390}
     - target: {fileID: 5712529147735014647, guid: cbc4085a367dcec48ad91a323d38dc60,
         type: 3}
       propertyPath: _BoardCollider
       value: 
       objectReference: {fileID: 1698833346}
+    - target: {fileID: 7712999590989386440, guid: cbc4085a367dcec48ad91a323d38dc60,
+        type: 3}
+      propertyPath: m_ConnectedRigidBody
+      value: 
+      objectReference: {fileID: 1405679390}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbc4085a367dcec48ad91a323d38dc60, type: 3}
 --- !u!1001 &8327845317890316236

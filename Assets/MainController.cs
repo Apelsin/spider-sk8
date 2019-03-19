@@ -1,122 +1,39 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
-/// <summary>
-/// A very basic scene controller
-/// </summary>
-public class MainController : MonoBehaviour, ISerializationCallbackReceiver
+public class MainController : MainControllerBase<MainController.State>
 {
-    public enum EState
+    public enum State
     {
         Default,
         PlayGame
     }
 
-    private EState _RuntimeCachedCurrentState;
+    private string _PendingLevelName = null;
 
-    [SerializeField]
-    private EState _CurrentState;
-
-    [SerializeField]
-    private string[] _PermanentScenes = new[] { "Globals" };
-
-    public EState CurrentState
+    public void LoadLevel(string level_name)
     {
-        get { return _CurrentState; }
-        set
-        {
-            if (value != _RuntimeCachedCurrentState)
-            {
-                if (OnChangeState(value))
-                {
-                    _RuntimeCachedCurrentState = value;
-                    _CurrentState = value;
-                }
-            }
-        }
+        // This looks hacky but it's not too bad IMO
+        Debug.Log("Load level: " + level_name);
+        _PendingLevelName = level_name;
+        RequestChangeState(State.PlayGame);
+        _PendingLevelName = null;
     }
 
-    [SerializeField]
-    private string _LevelName = "Level 1";
-
-    public string LevelName
+    protected override bool OnChangeStateRequest(State next_state)
     {
-        get { return _LevelName; }
-        protected set { _LevelName = value; }
-    }
-
-    protected IEnumerable<Scene> GetLoadedScenes(bool include_own_scene)
-    {
-        for (int i = 0; i < SceneManager.sceneCount; i++)
-        {
-            var scene = SceneManager.GetSceneAt(i);
-            if (include_own_scene || scene != gameObject.scene)
-                yield return scene;
-        }
-    }
-
-    public void ReplaceLoadedScenes(params string[] scenes_to_load)
-    {
-        var unload = GetLoadedScenes(false).ToArray();
-        foreach (var scene in unload.Where(s => !_PermanentScenes.Contains(s.name)))
-            SceneManager.UnloadSceneAsync(scene);
-        foreach (var name in scenes_to_load.Except(_PermanentScenes))
-            SceneManager.LoadSceneAsync(name, LoadSceneMode.Additive);
-    }
-
-    private bool OnChangeState(EState next_state)
-    {
-#if UNITY_EDITOR
-        if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
-            return true;
-#endif
         switch (next_state)
         {
             default:
                 ReplaceLoadedScenes("Main Menu");
                 return true;
 
-            case EState.PlayGame:
-                ReplaceLoadedScenes(LevelName);
-                return true;
+            case State.PlayGame:
+                if (!string.IsNullOrWhiteSpace(_PendingLevelName))
+                {
+                    ReplaceLoadedScenes(_PendingLevelName);
+                    return true;
+                }
+                return false;
         }
-    }
-
-    public bool LoadLevel(string level_name)
-    {
-#if UNITY_EDITOR
-        if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
-            return true;
-#endif
-        LevelName = level_name;
-        if (OnChangeState(EState.PlayGame))
-        {
-            _CurrentState = EState.PlayGame;
-            _RuntimeCachedCurrentState = _CurrentState;
-        }
-        return true;
-    }
-
-    private void Start()
-    {
-        var unload = GetLoadedScenes(false).ToArray();
-        foreach (var scene in unload)
-            SceneManager.UnloadSceneAsync(scene);
-        foreach (var name in _PermanentScenes)
-            SceneManager.LoadSceneAsync(name, LoadSceneMode.Additive);
-        OnChangeState(CurrentState);
-        _RuntimeCachedCurrentState = _CurrentState;
-    }
-
-    public void OnBeforeSerialize()
-    {
-        // Round-trip property valication
-        CurrentState = CurrentState;
-    }
-
-    public void OnAfterDeserialize()
-    {
     }
 }
