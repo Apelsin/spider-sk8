@@ -117,7 +117,6 @@ public abstract class MainControllerBase<TState> :
 
     protected IEnumerator ReplaceLoadedScenesCoroutine(params string[] request)
     {
-        Debug.Log("ReplaceLoadedScenesCoroutine was called");
         // Add the requested scenes
         var scenes_to_load = AddScenes(request);
 
