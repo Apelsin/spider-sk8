@@ -249,7 +249,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 10
   orthographic: 1
   orthographic size: 2
   m_Depth: -1
@@ -387,6 +387,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _UpdateTargetPosition:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Utilities+Vector3Event, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!4 &1457219527
 Transform:
   m_ObjectHideFlags: 0
