@@ -155,12 +155,32 @@ public abstract class MainControllerBase<TState> :
         return OnChangeStateRequest(next_state);
     }
 
-    private IEnumerator Start()
+    public static void DisableScene(Scene scene)
+    {
+        var game_objects = scene.GetRootGameObjects();
+        foreach (var game_object in game_objects)
+            game_object.SetActive(false);
+    }
+
+    private void ClearScenes()
     {
         // Unload all scenes (except for this scene)
         var scenes_to_unload = GetLoadedScenes(false).ToArray();
         foreach (var scene in scenes_to_unload)
+        {
+            DisableScene(scene);
             SceneManager.UnloadSceneAsync(scene);
+        }
+    }
+
+    protected virtual void Initialize()
+    {
+        ClearScenes();
+    }
+
+    protected virtual IEnumerator Start()
+    {
+        Initialize();
         // Wait for all scenes to unload
         while (GetLoadedScenes(false).Any())
             yield return new WaitForEndOfFrame();
@@ -195,13 +215,13 @@ public abstract class MainControllerBase<TState> :
         }
     }
 
-    public void OnBeforeSerialize()
+    public virtual void OnBeforeSerialize()
     {
         // Round-trip property validation
         CurrentState = CurrentState;
     }
 
-    public void OnAfterDeserialize()
+    public virtual void OnAfterDeserialize()
     {
     }
 }

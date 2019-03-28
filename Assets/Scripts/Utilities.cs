@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public static class Utilities
 {
@@ -49,6 +50,10 @@ public static class Utilities
         };
     }
 
+    [Serializable]
+    public class FloatEvent : UnityEvent<float> { }
+    [Serializable]
+    public class Vector3Event : UnityEvent<Vector3> { }
     // Extension method, call for any object, eg "if (x.IsNumeric())..."
     public static bool IsNumeric(this object x)
     {

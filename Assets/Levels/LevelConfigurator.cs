@@ -18,6 +18,13 @@ public class LevelConfigurator : MonoBehaviour
 
         var input_events = GetComponent<InputEvents>();
         input_events.Input = player_input;
+
+        var parallax_cam_tracker = GameObject.Find("Parallax Camera Tracker").GetComponent<ParallaxCameraTracker>();
+        level_cam.UpdateTargetPosition += (v) =>
+        {
+            parallax_cam_tracker.CameraPosition = level_cam.transform.position;
+            parallax_cam_tracker.CameraTargetPosition = v;
+        };
     }
 
     public void HandleInputButtonDownEvent(string button_name)

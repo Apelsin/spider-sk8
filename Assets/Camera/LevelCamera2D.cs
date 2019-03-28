@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-
+using UnityEngine.Events;
+using static Utilities;
 public class LevelCamera2D : MonoBehaviour
 {
     [SerializeField]
@@ -35,6 +36,19 @@ public class LevelCamera2D : MonoBehaviour
 
     private Vector2 _FeatheredVelocity;
     private Vector3 _TargetPosition;
+
+    public Vector3 TargetPosition
+    {
+        get { return _TargetPosition; }
+    }
+
+    [SerializeField]
+    private Vector3Event _UpdateTargetPosition = new Vector3Event();
+    public event UnityAction<Vector3> UpdateTargetPosition
+    {
+        add { _UpdateTargetPosition.AddListener(value); }
+        remove { _UpdateTargetPosition.RemoveListener(value); }
+    }
 
     private void Start()
     {
@@ -87,5 +101,6 @@ public class LevelCamera2D : MonoBehaviour
         var distance = Vector3.Distance(here, _TargetPosition);
         var t = Feathering * FeatherCurve.Evaluate(distance);
         transform.position = Vector3.Lerp(here, _TargetPosition, t * Time.deltaTime);
+        _UpdateTargetPosition.Invoke(_TargetPosition);
     }
 }
