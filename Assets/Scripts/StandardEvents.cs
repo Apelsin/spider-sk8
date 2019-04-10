@@ -1,48 +1,45 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace CVRLabSJSU
+public class StandardEvents : MonoBehaviour
 {
-    public class StandardEvents : MonoBehaviour
+    [SerializeField]
+    private UnityEvent _OnEnable = new UnityEvent();
+
+    public UnityEvent OnEnableEvent => _OnEnable;
+
+    private void OnEnable()
     {
-        [SerializeField]
-        private UnityEvent _OnEnable;
+        OnEnableEvent.Invoke();
+    }
 
-        public UnityEvent OnEnableEvent => _OnEnable;
+    [SerializeField]
+    private UnityEvent _OnDisable = new UnityEvent();
 
-        private void OnEnable()
-        {
-            OnEnableEvent.Invoke();
-        }
+    public UnityEvent OnDisableEvent => _OnDisable;
 
-        [SerializeField]
-        private UnityEvent _OnDisable;
+    private void OnDisable()
+    {
+        OnDisableEvent.Invoke();
+    }
 
-        public UnityEvent OnDisableEvent => _OnDisable;
+    [SerializeField]
+    private UnityEvent _Awake = new UnityEvent();
 
-        private void OnDisable()
-        {
-            OnDisableEvent.Invoke();
-        }
+    public UnityEvent AwakeEvent => _Awake;
 
-        [SerializeField]
-        private UnityEvent _Awake;
+    private void Awake()
+    {
+        AwakeEvent.Invoke();
+    }
 
-        public UnityEvent AwakeEvent => _Awake;
+    [SerializeField]
+    private UnityEvent _Start = new UnityEvent();
 
-        private void Awake()
-        {
-            AwakeEvent.Invoke();
-        }
+    public UnityEvent StartEvent => _Start;
 
-        [SerializeField]
-        private UnityEvent _Start;
-
-        public UnityEvent StartEvent => _Start;
-
-        private void Start()
-        {
-            StartEvent.Invoke();
-        }
+    private void Start()
+    {
+        StartEvent.Invoke();
     }
 }
