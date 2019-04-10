@@ -1,69 +1,45 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
-public class FauxParallax : MonoBehaviour, ISerializationCallbackReceiver
+public class FauxParallax : MonoBehaviour
 {
     [SerializeField]
-    private Transform _Camera;
+    [Tooltip("Transform of the Camera to move with respect to")]
+    private Transform _CameraTransform;
 
-    public Transform Camera
+    /// <summary>
+    /// Transform of the <see cref="Camera"/> to move with respect to
+    /// </summary>
+    public Transform CameraTransform
     {
-        get { return _Camera; }
-        set { _Camera = value; }
-    }
-
-    [SerializeField]
-    private Transform _ParallaxReference;
-
-    public Transform ParallaxReference
-    {
-        get { return _ParallaxReference; }
-        set { _ParallaxReference = value; }
-    }
-
-    protected virtual Vector3 ParallaxReferencePoint
-    {
-        get
-        {
-            if (_ParallaxReference != null)
-                return _ParallaxReference.position;
-            return Vector3.zero;
-        }
+        get { return _CameraTransform; }
+        set { _CameraTransform = value; }
     }
 
     [SerializeField]
     [Range(-10, 10f)]
+    [Tooltip("Distance multiplier (positive = farther, negative = closer, zero = in-plane)")]
     private float _Distance;
 
+    /// <summary>
+    /// Multiplier on the distance measured from the Camera to this object's
+    /// parent transform to position this object relative to its parent.
+    /// </summary>
+    /// <remarks>
+    /// positive = farther
+    /// negative = closer
+    /// zero = in-plane
+    /// </remarks>
     public float Distance
     {
         get { return _Distance; }
         set { _Distance = value; }
     }
 
-    [SerializeField]
-    private Vector2 _DistanceScale = Vector2.one;
-    public Vector2 DistanceScale
+    protected Transform GetCameraTrasform()
     {
-        get { return _DistanceScale; }
-        set { _DistanceScale = value; }
-    }
-
-    [SerializeField]
-    [Range(0f, 1f)]
-    private float _Smoothing;
-
-    public float Smoothing
-    {
-        get { return _Smoothing; }
-        set { _Smoothing = value; }
-    }
-
-    protected Transform GetCamera()
-    {
-        if (Camera != null)
-            return Camera;
-        return UnityEngine.Camera.main.transform;
+        if (CameraTransform != null)
+            return CameraTransform;
+        return Camera.main.transform;
     }
 
     private void Start()
@@ -72,22 +48,20 @@ public class FauxParallax : MonoBehaviour, ISerializationCallbackReceiver
 
     private void Update()
     {
-        var camera = GetCamera();
-        if (camera != null)
+        var camera_xform = GetCameraTrasform();
+        var parent = transform.parent;
+        if (camera_xform != null && parent != null)
         {
-            var offset = ParallaxReferencePoint - camera.position;
+            var offset = parent.position - camera_xform.position;
             var magnitude = Mathf.Pow(2f, -Distance) - 1f;
             var position = magnitude * offset;
-            position.Scale(_DistanceScale);
             transform.localPosition = position;
+            return;
         }
-    }
 
-    public void OnBeforeSerialize()
-    {
-    }
-
-    public void OnAfterDeserialize()
-    {
+        if (camera_xform == null)
+            Debug.LogWarning("No camera.");
+        if (parent == null)
+            Debug.LogWarning("Must be attached to a GameObject with a parented (non-root) Transform.");
     }
 }
