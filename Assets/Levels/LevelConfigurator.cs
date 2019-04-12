@@ -83,6 +83,13 @@ public class LevelConfigurator : MonoBehaviour
     {
         if (button_name == "Cancel")
             StartCoroutine(OnResetGame());
+        else if (button_name == "Toggle1")
+        {
+            var spooder_object = GameObject.Find("Spooder");
+            var spooder_animator = spooder_object.GetComponent<Animator>();
+            var hat = !spooder_animator.GetBool("Hat");
+            spooder_animator.SetBool("Hat", hat);
+        }
     }
 
     private IEnumerator OnResetGame()
