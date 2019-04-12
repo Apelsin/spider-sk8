@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 using static Utilities;
@@ -60,7 +61,7 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
     public FixedJoint2D SkateboardJoint
     {
         get { return _SkateboardJoint; }
-        protected set { _SkateboardJoint = value; }
+        set { _SkateboardJoint = value; }
     }
 
     [SerializeField]
@@ -72,27 +73,39 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
         set { _BoardCollider = value; }
     }
 
-    /// <summary>
-    /// Horizontal "running" force
-    /// </summary>
-    [Range(0.1f, 500f)]
-    public float HorizontalForce = 200f;
+    [Serializable]
+    public class Forces
+    {
+        /// <summary>
+        /// Horizontal "running" force
+        /// </summary>
+        [Range(0.1f, 500f)]
+        public float HorizontalForce = 24f;
 
-    [Range(0.1f, 500f)]
-    public float HorizontalForceInAir = 100f;
+        [Range(0.1f, 500f)]
+        public float HorizontalForceInAir = 3f;
 
-    /// <summary>
-    /// Jump impulse velocity added to vertical speed
-    /// when the protagonist jumps
-    /// </summary>
-    [Range(1f, 30f)]
-    public float JumpStrength = 1f;
+        /// <summary>
+        /// Jump impulse velocity added to vertical speed
+        /// when the protagonist jumps
+        /// </summary>
+        [Range(1f, 30f)]
+        public float JumpStrength = 3.5f;
 
-    [Range(0f, 1f)]
-    public float HorizontalDrag = 0f;
+        [Range(0f, 8f)]
+        public float HorizontalDrag = 0.9f;
 
-    [Range(0f, 1f)]
-    public float HorizontalDragInAir = 0f;
+        [Range(0f, 8f)]
+        public float HorizontalDragInAir = 0.7f;
+    }
+
+    [SerializeField]
+    private Forces _OnBoardForces;
+    public Forces OnBoardForces { get { return _OnBoardForces; } }
+
+    [SerializeField]
+    private Forces _OffBoardForces;
+    public Forces OffBoardForces {  get { return _OffBoardForces; } }
 
     public bool EnableMaxLean = true;
 
@@ -108,6 +121,26 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
         get { return _MaxLeanAirFlag; }
         set { _MaxLeanAirFlag = value; }
     }
+
+    [SerializeField]
+    private Vector2 _OnBoardCenterOfMass;
+
+    public Vector2 OnBoardCenterOfMass
+    {
+        get { return _OnBoardCenterOfMass; }
+        set { _OnBoardCenterOfMass = value; }
+    }
+
+    [SerializeField]
+    private Vector2 _OffBoardCenterOfMass;
+
+    public Vector2 OffBoardCenterOfMass
+    {
+        get { return _OffBoardCenterOfMass; }
+        set { _OffBoardCenterOfMass = value; }
+    }
+
+
 
     #region Input Logic
 
@@ -156,6 +189,19 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
 
     #region Status
 
+    public struct PreStatus
+    {
+        public bool IsOnBoard;
+    }
+
+    public PreStatus GetPreStatus()
+    {
+        return new PreStatus
+        {
+            IsOnBoard = SkateboardJoint && SkateboardJoint.connectedBody
+        };
+    }
+
     /// <summary>
     /// Values indicating the current status of the protagonist,
     /// such as whether the protagonist is physically suppported, etc.
@@ -163,15 +209,12 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
     public struct Status
     {
         public bool IsPhysicallySupported;
-        public Vector2 CenterOfMass;
+        public Vector2 CombinedCenterOfMass;
         public bool GrindReady;
+        public bool IsOnBoard;
     }
 
-    /// <summary>
-    /// Gets the current status of the protagonist
-    /// </summary>
-    /// <returns>Status object</returns>
-    public Status GetStatus()
+    public Status GetStatus(PreStatus prestatus)
     {
         // Calculate whether the protagonist is currently physically
         // supported using a trigger collider overlap test
@@ -183,7 +226,13 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
 
         Vector2 center_of_mass = new Vector2();
         float mass = 0;
-        foreach (var rb in new[] { Rigidbody, SkateboardJoint.connectedBody })
+        var bodies = new List<Rigidbody2D>
+        {
+            Rigidbody
+        };
+        if (prestatus.IsOnBoard)
+            bodies.Add(SkateboardJoint.connectedBody);
+        foreach (var rb in bodies)
         {
             center_of_mass += rb.worldCenterOfMass * rb.mass;
             mass += rb.mass;
@@ -195,9 +244,18 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
             // If there is at least one physical support,
             // then the protagonist is physically supported
             IsPhysicallySupported = number_of_physical_suports > 0,
-            CenterOfMass = center_of_mass,
-            GrindReady = Rigidbody.velocity.y <= 0.01f
+            CombinedCenterOfMass = center_of_mass,
+            GrindReady = Rigidbody.velocity.y <= 0.01f,
         };
+    }
+
+    /// <summary>
+    /// Gets the current status of the protagonist
+    /// </summary>
+    /// <returns>Status object</returns>
+    public Status GetStatus()
+    {
+        return GetStatus(GetPreStatus());
     }
 
     #endregion Status
@@ -216,27 +274,39 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
     /// </summary>
     private void FixedUpdate()
     {
-        var status = GetStatus();
+        var prestatus = GetPreStatus();
+        Forces forces;
+        if (prestatus.IsOnBoard)
+        {
+            Rigidbody.centerOfMass = OnBoardCenterOfMass;
+            forces = OnBoardForces;
+        }
+        else
+        {
+            Rigidbody.centerOfMass = OffBoardCenterOfMass;
+            forces = OffBoardForces;
+        }
+        var status = GetStatus(prestatus);
         if (Input != null)
         {
             // Get the rigidbody velocity
             var velocity = Rigidbody.velocity;
-            var force_locus = status.CenterOfMass + (Vector2)transform.TransformVector(ForceOffset);
+            var force_locus = status.CombinedCenterOfMass + (Vector2)transform.TransformVector(ForceOffset);
             if (_Logic.HasHorizontal)
             {
                 float force_coef, h_drag_coef;
                 Func<Vector3, Vector3> itf_func, tv_func;
                 if (status.IsPhysicallySupported)
                 {
-                    force_coef = HorizontalForce;
-                    h_drag_coef = HorizontalDrag;
+                    force_coef = forces.HorizontalForce;
+                    h_drag_coef = forces.HorizontalDrag;
                     itf_func = transform.InverseTransformVector;
                     tv_func = transform.TransformVector;
                 }
                 else
                 {
-                    force_coef = HorizontalForceInAir;
-                    h_drag_coef = HorizontalDragInAir;
+                    force_coef = forces.HorizontalForceInAir;
+                    h_drag_coef = forces.HorizontalDragInAir;
                     itf_func = x => x;
                     tv_func = x => x;
                 }
@@ -255,7 +325,7 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
             {
                 //velocity.y += JumpStrength;
                 var impulse_constant = 1f / Time.fixedDeltaTime;
-                Vector3 jump_impulse = impulse_constant * new Vector3(0f, JumpStrength);
+                Vector3 jump_impulse = impulse_constant * new Vector3(0f, forces.JumpStrength);
                 Rigidbody.AddForceAtPosition(jump_impulse, force_locus, ForceMode2D.Force);
                 _Logic.Jump = false;
             }
@@ -296,7 +366,11 @@ public class SpooderMotion : MonoBehaviour, ISerializationCallbackReceiver
             Rigidbody.freezeRotation = false;
         }
 
-        BoardCollider.gameObject.layer = status.GrindReady ? LayerMask.NameToLayer("Board") : LayerMask.NameToLayer("No Grind");
+        if (status.GrindReady)
+            BoardCollider.gameObject.layer = LayerMask.NameToLayer("Board");
+        else
+            BoardCollider.gameObject.layer = LayerMask.NameToLayer("No Grind");
+
         MaxLeanAirFlag &= !status.IsPhysicallySupported;
     }
 
