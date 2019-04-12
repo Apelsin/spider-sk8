@@ -26,7 +26,7 @@ public class SkateboardJointController : MonoBehaviour, ISerializationCallbackRe
     private FixedJoint2D _Joint;
 
     [MinMax(0f, 5000f)]
-    [FormerlySerializedAs("BreakForce")]
+    [SerializeField]
     private Vector2 _BreakForce = new Vector2(4000f, 5000f);
 
     public Vector2 BreakForce

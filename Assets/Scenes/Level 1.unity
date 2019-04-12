@@ -258,7 +258,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 1e1ae9d859c88074394373838a82ba9b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -4626,6 +4626,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6571395437436593996, guid: a5e307db58bcfd340a0c656c169a38da,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6571395436685079787, guid: a5e307db58bcfd340a0c656c169a38da,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -4765,6 +4770,14 @@ PrefabInstance:
       propertyPath: _BoardCollider
       value: 
       objectReference: {fileID: 742769956}
+    - target: {fileID: 1920309023, guid: cbc4085a367dcec48ad91a323d38dc60, type: 3}
+      propertyPath: _BreakForce.x
+      value: 123.18848
+      objectReference: {fileID: 0}
+    - target: {fileID: 1920309023, guid: cbc4085a367dcec48ad91a323d38dc60, type: 3}
+      propertyPath: _BreakForce.y
+      value: 2101.4482
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbc4085a367dcec48ad91a323d38dc60, type: 3}
 --- !u!1001 &8327845317890316236
@@ -4778,11 +4791,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Skateboard
-      objectReference: {fileID: 0}
-    - target: {fileID: 8327845318717104338, guid: f9a9998d6cf37a842bdf856ea00693d2,
-        type: 3}
-      propertyPath: m_Mass
-      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8327845318717104339, guid: f9a9998d6cf37a842bdf856ea00693d2,
         type: 3}
@@ -4848,6 +4856,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327845318717104338, guid: f9a9998d6cf37a842bdf856ea00693d2,
+        type: 3}
+      propertyPath: m_Mass
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9a9998d6cf37a842bdf856ea00693d2, type: 3}
