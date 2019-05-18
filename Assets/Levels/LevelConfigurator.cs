@@ -77,6 +77,10 @@ public class LevelConfigurator : MonoBehaviour
         yield return new WaitForSeconds(1);
         var hud = FindObjectOfType<GameplayHUDController>();
         hud.GetComponent<Animator>().SetBool("Focused", true);
+
+        // Demo mode: automatically reset the game after showing the score for 10 seconds
+        yield return new WaitForSeconds(10);
+        OnResetGame();
     }
 
     public void HandleInputButtonDownEvent(string button_name)
