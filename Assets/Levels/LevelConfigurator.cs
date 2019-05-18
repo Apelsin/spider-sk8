@@ -81,7 +81,7 @@ public class LevelConfigurator : MonoBehaviour
 
     public void HandleInputButtonDownEvent(string button_name)
     {
-        if (button_name == "Cancel")
+        if (button_name == "Cancel" || button_name == "Player 1" || button_name == "Player 2")
             StartCoroutine(OnResetGame());
         else if (button_name == "Toggle1")
         {
