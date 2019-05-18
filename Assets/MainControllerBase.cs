@@ -69,6 +69,17 @@ public abstract class MainControllerBase<TState> :
         }
     }
 
+    public bool RequestChangeState(string next_state_str)
+    {
+        object state_obj = Enum.Parse(typeof(TState), next_state_str);
+        if (state_obj is TState)
+        {
+            return RequestChangeState((TState)state_obj);
+        }
+        Debug.LogWarning($"Unrecognized state name.\n\"{next_state_str}\" is not a member of {typeof(TState)}");
+        return false;
+    }
+
     protected IEnumerable<Scene> GetLoadedScenes(bool include_own_scene)
     {
         for (int i = 0; i < SceneManager.sceneCount; i++)
@@ -132,7 +143,7 @@ public abstract class MainControllerBase<TState> :
             yield return new WaitForEndOfFrame();
     }
 
-    public void ReplaceLoadedScenes(params string[] scenes_to_load)
+    protected void ReplaceLoadedScenes(params string[] scenes_to_load)
     {
         foreach (var name in scenes_to_load)
         {
@@ -155,7 +166,7 @@ public abstract class MainControllerBase<TState> :
         return OnChangeStateRequest(next_state);
     }
 
-    public static void DisableScene(Scene scene)
+    protected static void DisableScene(Scene scene)
     {
         var game_objects = scene.GetRootGameObjects();
         foreach (var game_object in game_objects)

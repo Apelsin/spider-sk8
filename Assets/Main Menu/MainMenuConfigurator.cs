@@ -30,7 +30,9 @@ public class MainMenuConfigurator : MonoBehaviour
         var press_start_ani = GameObject.Find("PRESS START").GetComponent<Animator>();
         press_start_ani.SetFloat("Speed", 5f);
         yield return new WaitForSeconds(1f);
-        var controller = FindObjectOfType<MainController>();
+        var controller = GameObject
+            .FindWithTag("GameController")
+            .GetComponent<IMainController>();
         controller.LoadLevel("Level 1");
     }
 }

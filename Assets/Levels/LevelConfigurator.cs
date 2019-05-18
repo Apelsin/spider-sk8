@@ -94,8 +94,10 @@ public class LevelConfigurator : MonoBehaviour
 
     private IEnumerator OnResetGame()
     {
-        var controller = FindObjectOfType<MainController>();
-        controller.RequestChangeState(MainController.State.Default);
+        var controller = GameObject
+            .FindWithTag("GameController")
+            .GetComponent<IMainController>();
+        controller.RequestChangeState("Default");
         yield return null;
     }
 }

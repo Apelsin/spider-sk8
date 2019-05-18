@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ArcadeMainController : MainControllerBase<ArcadeMainController.State>
+public class ArcadeMainController : MainControllerBase<ArcadeMainController.State>, IMainController
 {
     public enum State
     {
@@ -14,7 +14,6 @@ public class ArcadeMainController : MainControllerBase<ArcadeMainController.Stat
 
     public void LoadLevel(string level_name)
     {
-        // This looks hacky but it's not too bad IMO
         Debug.Log("Load level " + level_name);
         _PendingLevelName = level_name;
         RequestChangeState(State.PlayGame);

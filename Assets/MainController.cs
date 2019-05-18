@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class MainController : MainControllerBase<MainController.State>
+public class MainController : MainControllerBase<MainController.State>, IMainController
 {
     public enum State
     {
