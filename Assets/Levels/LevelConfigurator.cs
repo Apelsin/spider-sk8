@@ -82,9 +82,8 @@ public class LevelConfigurator : MonoBehaviour
         hud.GetComponent<Animator>().SetBool("Focused", true);
 
         // Demo mode: automatically reset the game after showing the score for 10 seconds
-        StartCoroutine(OnResetGame());
         yield return new WaitForSeconds(10);
-        
+        StartCoroutine(OnResetGame());
     }
 
     public void HandleInputButtonDownEvent(string button_name)
