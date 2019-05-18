@@ -28,6 +28,9 @@ public class LevelConfigurator : MonoBehaviour
 
         _ScoreController = FindObjectOfType<GameplayScoreController>();
         _ScoreController.TotalPointsChanged += HandleTotalPointsChanged;
+
+        // Demo mode
+        StartCoroutine(CheckIdleInputForDemo());
     }
 
     private void HandleTotalPointsChanged(int total_points)
@@ -79,8 +82,9 @@ public class LevelConfigurator : MonoBehaviour
         hud.GetComponent<Animator>().SetBool("Focused", true);
 
         // Demo mode: automatically reset the game after showing the score for 10 seconds
+        StartCoroutine(OnResetGame());
         yield return new WaitForSeconds(10);
-        OnResetGame();
+        
     }
 
     public void HandleInputButtonDownEvent(string button_name)
@@ -93,6 +97,30 @@ public class LevelConfigurator : MonoBehaviour
             var spooder_animator = spooder_object.GetComponent<Animator>();
             var hat = !spooder_animator.GetBool("Hat");
             spooder_animator.SetBool("Hat", hat);
+        }
+    }
+
+    private IEnumerator CheckIdleInputForDemo()
+    {
+        // Demo mode: automatically reset the game if there is no input for some time
+        var last_input_time = Time.unscaledTime;
+        var player_input = FindObjectOfType<PlayerInput>();
+        for (; ; )
+        {
+            var any_input =
+                player_input.GetAxis("Horizontal") != 0 ||
+                player_input.GetAxis("Vertical") != 0 ||
+                player_input.GetButton("Jump");
+            if (any_input)
+                last_input_time = Time.unscaledTime;
+
+            // Reset after 20 seconds
+            if( (Time.unscaledTime - last_input_time) > 20f)
+            {
+                StartCoroutine(OnResetGame());
+                break;
+            }
+            yield return new WaitForEndOfFrame();
         }
     }
 
